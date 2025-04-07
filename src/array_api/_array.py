@@ -205,7 +205,7 @@ class Array(Protocol):
         """
         ...
 
-    def __add__(self: Self, other: float | Self, /) -> Self:
+    def __add__(self: Self, other: complex | Self, /) -> Self:
         """
         Calculates the sum for each element of an array instance with the
         respective element of the array ``other``.
@@ -277,6 +277,8 @@ class Array(Protocol):
 
         """
         ...
+
+    def __radd__(self: Self, other: complex | Self, /) -> Self: ...
 
     def __and__(self: Self, other: int | bool | Self, /) -> Self:
         """
@@ -1080,7 +1082,7 @@ class Array(Protocol):
         """
         ...
 
-    def __mul__(self: Self, other: int | float | complex | Self, /) -> Self:
+    def __mul__(self: Self, other: complex | Self, /) -> Self:
         """
         Calculates the product for each element of an array instance with the
         respective element of the array ``other``.
@@ -1148,9 +1150,8 @@ class Array(Protocol):
 
         """
         ...
-    
-    def __rmul__(self: Self, other: int | float | complex | Self, /) -> Self:
-        ...
+
+    def __rmul__(self: Self, other: complex | Self, /) -> Self: ...
 
     def __ne__(self: Self, other: object, /) -> Self:  # type: ignore[override]
         """
@@ -1266,7 +1267,7 @@ class Array(Protocol):
         """
         ...
 
-    def __pow__(self: Self, other: float | Self, /) -> Self:
+    def __pow__(self: Self, other: complex | Self, /) -> Self:
         """
         Calculates an implementation-dependent approximation of exponentiation
         by raising each element (the base) of an array instance to the power of
@@ -1365,6 +1366,8 @@ class Array(Protocol):
         """
         ...
 
+    def __rpow__(self: Self, other: complex | Self, /) -> Self: ...
+
     def __rshift__(self: Self, other: int | Self, /) -> Self:
         """
         Evaluates ``self_i >> other_i`` for each element of an array instance
@@ -1436,7 +1439,7 @@ class Array(Protocol):
         """
         ...
 
-    def __sub__(self: Self, other: float | Self, /) -> Self:
+    def __sub__(self: Self, other: complex | Self, /) -> Self:
         """
         Calculates the difference for each element of an array instance with the
         respective element of the array ``other``. The result of ``self_i -
@@ -1468,7 +1471,9 @@ class Array(Protocol):
         """
         ...
 
-    def __truediv__(self: Self, other: float | Self, /) -> Self:
+    def __rsub__(self: Self, other: complex | Self, /) -> Self: ...
+
+    def __truediv__(self: Self, other: complex | Self, /) -> Self:
         """
         Evaluates ``self_i / other_i`` for each element of an array instance
         with the respective element of the array ``other``.
@@ -1565,7 +1570,7 @@ class Array(Protocol):
         """
         ...
 
-    def __rtruediv__(self: Self, other: float | Self, /) -> Self: ...
+    def __rtruediv__(self: Self, other: complex | Self, /) -> Self: ...
 
     def __xor__(self: Self, other: int | bool | Self, /) -> Self:
         """

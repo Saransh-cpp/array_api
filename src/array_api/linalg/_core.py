@@ -159,7 +159,7 @@ def diagonal(x: Array, /, *, offset: int = 0) -> Array:
     return get_namespace(x).linalg.diagonal(x, offset=offset)
 
 
-def eigh(x: Array, /) -> tuple[Array]:
+def eigh(x: Array, /) -> tuple[Array, Array]:
     """
     Returns an eigendecomposition x = QLQᵀ of a symmetric matrix (or a stack of
     symmetric matrices) ``x``, where ``Q`` is an orthogonal matrix (or a stack

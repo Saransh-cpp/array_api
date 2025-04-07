@@ -4,18 +4,15 @@ from __future__ import annotations
 
 __all__ = ["Array"]
 
-from typing import TYPE_CHECKING, Any, Literal, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from enum import Enum
     from types import EllipsisType
 
     from typing_extensions import Self
 
     from array_api._device import Device
     from array_api._dtype import DType
-    from array_api._namespace_api import ArrayAPINamespace
-    from array_api._types import PyCapsule
 
 
 @runtime_checkable
@@ -309,37 +306,37 @@ class Array(Protocol):
         """
         ...
 
-    def __array_namespace__(
-        self,
-        /,
-        *,
-        api_version: Literal["2021.12", "2022.12", "2023.12"] | None = None,
-    ) -> ArrayAPINamespace:
-        """
-        Returns an object that has all the array API functions on it.
+    # def __array_namespace__(
+    #     self,
+    #     /,
+    #     *,
+    #     api_version: Literal["2021.12", "2022.12", "2023.12"] | None = None,
+    # ) -> ArrayAPINamespace:
+    #     """
+    #     Returns an object that has all the array API functions on it.
 
-        Parameters
-        ----------
-        self : array
-            array instance.
-        api_version: Optional[str]
-            string representing the version of the array API specification to be
-            returned, in ``'YYYY.MM'`` form, for example, ``'2020.10'``. If it
-            is ``None``, it should return the namespace corresponding to latest
-            version of the array API specification.  If the given version is
-            invalid or not implemented for the given module, an error should be
-            raised. Default: ``None``.
+    #     Parameters
+    #     ----------
+    #     self : array
+    #         array instance.
+    #     api_version: Optional[str]
+    #         string representing the version of the array API specification to be
+    #         returned, in ``'YYYY.MM'`` form, for example, ``'2020.10'``. If it
+    #         is ``None``, it should return the namespace corresponding to latest
+    #         version of the array API specification.  If the given version is
+    #         invalid or not implemented for the given module, an error should be
+    #         raised. Default: ``None``.
 
-        Returns
-        -------
-        out: Any
-            an object representing the array API namespace. It should have every
-            top-level function defined in the specification as an attribute. It
-            may contain other public names as well, but it is recommended to
-            only include those names that are part of the specification.
+    #     Returns
+    #     -------
+    #     out: Any
+    #         an object representing the array API namespace. It should have every
+    #         top-level function defined in the specification as an attribute. It
+    #         may contain other public names as well, but it is recommended to
+    #         only include those names that are part of the specification.
 
-        """
-        ...
+    #     """
+    #     ...
 
     def __bool__(self, /) -> bool:
         """
@@ -359,112 +356,107 @@ class Array(Protocol):
         """
         ...
 
-    def __dlpack__(
-        self,
-        /,
-        *,
-        stream: int | Any | None = None,  # noqa: ANN401
-    ) -> PyCapsule:
-        """
-        Exports the array for consumption by
-        :func:`~array_api.creation_functions.from_dlpack` as a DLPack capsule.
+    # def __dlpack__(
+    #     self,
+    #     /,
+    #     *,
+    #     stream: int | Any | None = None,
+    # ) -> PyCapsule:
+    #     """
+    #     Exports the array for consumption by
+    #     :func:`~array_api.creation_functions.from_dlpack` as a DLPack capsule.
 
-        Parameters
-        ----------
-        self : array
-            array instance.
-        stream: Optional[Union[int, Any]]
-            for CUDA and ROCm, a Python integer representing a pointer to a
-            stream, on devices that support streams. ``stream`` is provided by
-            the consumer to the producer to instruct the producer to ensure that
-            operations can safely be performed on the array (e.g., by inserting
-            a dependency between streams via "wait for event"). The pointer must
-            be a positive integer or ``-1``. If ``stream`` is ``-1``, the value
-            may be used by the consumer to signal "producer must not perform any
-            synchronization". The ownership of the stream stays with the
-            consumer. On CPU and other device types without streams, only
-            ``None`` is accepted.
+    #     Parameters
+    #     ----------
+    #     self : array
+    #         array instance.
+    #     stream: Optional[Union[int, Any]]
+    #         for CUDA and ROCm, a Python integer representing a pointer to a
+    #         stream, on devices that support streams. ``stream`` is provided by
+    #         the consumer to the producer to instruct the producer to ensure that
+    #         operations can safely be performed on the array (e.g., by inserting
+    #         a dependency between streams via "wait for event"). The pointer must
+    #         be a positive integer or ``-1``. If ``stream`` is ``-1``, the value
+    #         may be used by the consumer to signal "producer must not perform any
+    #         synchronization". The ownership of the stream stays with the
+    #         consumer. On CPU and other device types without streams, only
+    #         ``None`` is accepted.
 
-            For other device types which do have a stream, queue or similar
-            synchronization mechanism, the most appropriate type to use for
-            ``stream`` is not yet determined. E.g., for SYCL one may want to use
-            an object containing an in-order ``cl::sycl::queue``. This is
-            allowed when libraries agree on such a convention, and may be
-            standardized in a future version of this API standard.
+    #         For other device types which do have a stream, queue or similar
+    #         synchronization mechanism, the most appropriate type to use for
+    #         ``stream`` is not yet determined. E.g., for SYCL one may want to use
+    #         an object containing an in-order ``cl::sycl::queue``. This is
+    #         allowed when libraries agree on such a convention, and may be
+    #         standardized in a future version of this API standard.
 
+    #     .. note::
 
-        .. note::
+    #         Support for a ``stream`` value other than ``None`` is optional and
+    #         implementation-dependent.
 
-            Support for a ``stream`` value other than ``None`` is optional and
-            implementation-dependent.
+    #     Device-specific notes:
 
+    #     .. admonition:: CUDA
+    #         :class: note
 
-        Device-specific notes:
+    #         - ``None``: producer must assume the legacy default stream
+    #           (default).
+    #         - ``1``: the legacy default stream.
+    #         - ``2``: the per-thread default stream.
+    #         - ``> 2``: stream number represented as a Python integer.
+    #         - ``0`` is disallowed due to its ambiguity: ``0`` could mean either
+    #           ``None``, ``1``, or ``2``.
 
+    #     .. admonition:: ROCm
+    #         :class: note
 
-        .. admonition:: CUDA
-            :class: note
+    #         - ``None``: producer must assume the legacy default stream
+    #           (default).
+    #         - ``0``: the default stream.
+    #         - ``> 2``: stream number represented as a Python integer.
+    #         - Using ``1`` and ``2`` is not supported.
 
-            - ``None``: producer must assume the legacy default stream
-              (default).
-            - ``1``: the legacy default stream.
-            - ``2``: the per-thread default stream.
-            - ``> 2``: stream number represented as a Python integer.
-            - ``0`` is disallowed due to its ambiguity: ``0`` could mean either
-              ``None``, ``1``, or ``2``.
+    #     .. admonition:: Tip
+    #         :class: important
 
+    #         It is recommended that implementers explicitly handle streams. If
+    #         they use the legacy default stream, specifying ``1`` (CUDA) or ``0``
+    #         (ROCm) is preferred. ``None`` is a safe default for developers who
+    #         do not want to think about stream handling at all, potentially at
+    #         the cost of more synchronization than necessary.
 
-        .. admonition:: ROCm
-            :class: note
+    #     Returns
+    #     -------
+    #     capsule: PyCapsule
+    #         a DLPack capsule for the array. See :ref:`data-interchange` for
+    #         details.
 
-            - ``None``: producer must assume the legacy default stream
-              (default).
-            - ``0``: the default stream.
-            - ``> 2``: stream number represented as a Python integer.
-            - Using ``1`` and ``2`` is not supported.
+    #     """
+    #     ...
 
+    # def __dlpack_device__(self, /) -> tuple[Enum, int]:
+    #     """
+    #     Returns device type and device ID in DLPack format. Meant for use within
+    #     :func:`~array_api.creation_functions.from_dlpack`.
 
-        .. admonition:: Tip
-            :class: important
+    #     Parameters
+    #     ----------
+    #     self : array
+    #         array instance.
 
-            It is recommended that implementers explicitly handle streams. If
-            they use the legacy default stream, specifying ``1`` (CUDA) or ``0``
-            (ROCm) is preferred. ``None`` is a safe default for developers who
-            do not want to think about stream handling at all, potentially at
-            the cost of more synchronization than necessary.
+    #     Returns
+    #     -------
+    #     device: Tuple[Enum, int]
+    #         a tuple ``(device_type, device_id)`` in DLPack format. Valid device
+    #         type enum members are:
 
-        Returns
-        -------
-        capsule: PyCapsule
-            a DLPack capsule for the array. See :ref:`data-interchange` for
-            details.
+    #         ::
 
-        """
-        ...
+    #           CPU = 1 CUDA = 2 CPU_PINNED = 3 OPENCL = 4 VULKAN = 7 METAL = 8
+    #           VPI = 9 ROCM = 10
 
-    def __dlpack_device__(self, /) -> tuple[Enum, int]:
-        """
-        Returns device type and device ID in DLPack format. Meant for use within
-        :func:`~array_api.creation_functions.from_dlpack`.
-
-        Parameters
-        ----------
-        self : array
-            array instance.
-
-        Returns
-        -------
-        device: Tuple[Enum, int]
-            a tuple ``(device_type, device_id)`` in DLPack format. Valid device
-            type enum members are:
-
-            ::
-
-              CPU = 1 CUDA = 2 CPU_PINNED = 3 OPENCL = 4 VULKAN = 7 METAL = 8
-              VPI = 9 ROCM = 10
-
-        """
-        ...
+    #     """
+    #     ...
 
     def __eq__(self: Self, other: object, /) -> Self:  # type: ignore[override]
         """

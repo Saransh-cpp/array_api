@@ -674,7 +674,8 @@ class Array(Protocol):
             int
             | slice
             | EllipsisType
-            | tuple[int | slice | EllipsisType, ...]
+            | None
+            | tuple[int | slice | EllipsisType | None, ...]
             | Self
         ),
         /,

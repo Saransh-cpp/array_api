@@ -1080,7 +1080,7 @@ class Array(Protocol):
         """
         ...
 
-    def __mul__(self: Self, other: float | Self, /) -> Self:
+    def __mul__(self: Self, other: int | float | complex | Self, /) -> Self:
         """
         Calculates the product for each element of an array instance with the
         respective element of the array ``other``.
@@ -1147,6 +1147,9 @@ class Array(Protocol):
            :func:`~array_api.elementwise_functions.multiply`.
 
         """
+        ...
+    
+    def __rmul__(self: Self, other: int | float | complex | Self, /) -> Self:
         ...
 
     def __ne__(self: Self, other: object, /) -> Self:  # type: ignore[override]

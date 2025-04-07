@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Array"]
 
-from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Literal, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from enum import Enum
@@ -310,7 +310,10 @@ class Array(Protocol):
         ...
 
     def __array_namespace__(
-        self, /, *, api_version: str | None = None
+        self,
+        /,
+        *,
+        api_version: Literal["2021.12", "2022.12", "2023.12"] | None = None,
     ) -> ArrayAPINamespace:
         """
         Returns an object that has all the array API functions on it.
